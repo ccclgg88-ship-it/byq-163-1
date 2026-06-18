@@ -46,33 +46,31 @@ export function DonutChart({ data, totalMinutes, onCategoryClick }: Props) {
     ],
     graphic: [
       {
-        type: 'group',
-        left: '28%',
-        top: 'center',
-        children: [
-          {
-            type: 'text',
-            style: {
-              text: formatDuration(totalMinutes),
-              fill: '#1a1a2e',
-              font: '600 18px "DM Sans", "Noto Sans SC", sans-serif',
-              textAlign: 'center',
-            },
-            left: 'center',
-            top: -8,
-          },
-          {
-            type: 'text',
-            style: {
-              text: '总时长',
-              fill: '#8b8b9e',
-              font: '400 12px "Noto Sans SC", sans-serif',
-              textAlign: 'center',
-            },
-            left: 'center',
-            top: 16,
-          },
-        ],
+        type: 'text',
+        left: '38%',
+        top: '50%',
+        style: {
+          text: formatDuration(totalMinutes),
+          fill: '#1a1a2e',
+          font: '600 17px "DM Sans", "Noto Sans SC", sans-serif',
+          textAlign: 'center',
+          textVerticalAlign: 'bottom',
+        },
+        z: 100,
+      },
+      {
+        type: 'text',
+        left: '38%',
+        top: '50%',
+        style: {
+          text: '总时长',
+          fill: '#8b8b9e',
+          font: '400 12px "Noto Sans SC", sans-serif',
+          textAlign: 'center',
+          textVerticalAlign: 'top',
+          lineHeight: 22,
+        },
+        z: 100,
       },
     ],
   }

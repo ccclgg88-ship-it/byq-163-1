@@ -74,7 +74,7 @@ export function BudgetProgress({ data, onCategoryClick }: Props) {
                 <div
                   className="budget-progress-bar__fill"
                   style={{
-                    width: `${barWidth}%`,
+                    width: `${Math.min(barWidth, 100)}%`,
                     background: isAlert
                       ? `linear-gradient(90deg, ${statusCfg.color}CC, ${statusCfg.color})`
                       : `linear-gradient(90deg, ${item.color}99, ${item.color})`,
@@ -84,7 +84,7 @@ export function BudgetProgress({ data, onCategoryClick }: Props) {
                   <div
                     className="budget-progress-bar__overflow"
                     style={{
-                      width: `${Math.min(barOverflow, 30)}%`,
+                      width: `${Math.min(barOverflow / item.progressPercent * 100, 20)}%`,
                       background: `repeating-linear-gradient(
                         45deg,
                         ${statusCfg.color},

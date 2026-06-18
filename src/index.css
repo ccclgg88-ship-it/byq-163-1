@@ -653,8 +653,10 @@ select {
   height: 10px;
   background: rgba(139, 139, 158, 0.15);
   border-radius: 5px;
-  overflow: visible;
+  overflow: hidden;
   position: relative;
+  display: flex;
+  align-items: stretch;
 }
 
 .budget-progress-bar__fill {
@@ -662,15 +664,15 @@ select {
   border-radius: 5px;
   transition: width 0.5s ease;
   min-width: 4px;
+  flex-shrink: 0;
+  position: relative;
 }
 
 .budget-progress-bar__overflow {
-  position: absolute;
-  left: 100%;
-  top: 0;
   height: 100%;
   border-radius: 0 5px 5px 0;
-  opacity: 0.8;
+  opacity: 0.9;
+  flex-shrink: 0;
 }
 
 .budget-progress-bar__percent {
