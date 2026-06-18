@@ -34,6 +34,50 @@ export interface DayTrend {
   total: number
 }
 
+export type BudgetType = 'max' | 'min' | 'suggest'
+
+export interface BudgetConfig {
+  category: CategoryId
+  period: Period
+  type: BudgetType
+  targetMinutes: number
+}
+
+export interface BudgetProgress {
+  category: CategoryId
+  label: string
+  color: string
+  period: Period
+  type: BudgetType
+  targetMinutes: number
+  actualMinutes: number
+  remainingMinutes: number
+  progressPercent: number
+  status: 'exceeded' | 'warning' | 'good' | 'insufficient' | 'severe_insufficient'
+}
+
+export interface WeeklyBudgetSummary {
+  category: CategoryId
+  label: string
+  color: string
+  type: BudgetType
+  targetMinutes: number
+  weekMinutes: number
+  lastWeekMinutes: number
+  achievementRate: number
+  lastWeekAchievementRate: number
+  trend: 'up' | 'down' | 'same'
+}
+
+export const DEFAULT_BUDGETS: Omit<BudgetConfig, 'category'>[] = [
+  { period: 'today', type: 'max', targetMinutes: 480 },
+  { period: 'week', type: 'max', targetMinutes: 2400 },
+  { period: 'today', type: 'suggest', targetMinutes: 420 },
+  { period: 'week', type: 'suggest', targetMinutes: 2940 },
+  { period: 'today', type: 'min', targetMinutes: 120 },
+  { period: 'week', type: 'min', targetMinutes: 840 },
+]
+
 export const CATEGORIES: Category[] = [
   { id: 'work', label: '工作', color: '#4F6BED' },
   { id: 'commute', label: '通勤', color: '#7B61FF' },

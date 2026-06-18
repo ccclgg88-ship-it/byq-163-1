@@ -3,6 +3,8 @@ import type { CategoryId, Period } from './types'
 import { useTimeStore, useTimer } from './hooks/useTimeStore'
 import {
   aggregateByCategory,
+  calculateAllBudgetProgress,
+  calculateWeeklyBudgetSummary,
   filterByCategory,
   filterByPeriod,
   getLast7DaysTrend,
@@ -14,12 +16,24 @@ import { DetailList } from './components/DetailList'
 import { RecordForm } from './components/RecordForm'
 import { QuickTimer } from './components/QuickTimer'
 import { EmptyState } from './components/EmptyState'
+import { BudgetProgress } from './components/BudgetProgress'
+import { BudgetSummary } from './components/BudgetSummary'
+import { BudgetSettings } from './components/BudgetSettings'
 
 function App() {
-  const { entries, addEntry, deleteEntry } = useTimeStore()
+  const {
+    entries,
+    addEntry,
+    deleteEntry,
+    budgets,
+    setBudget,
+    removeBudget,
+    resetBudgets,
+  } = useTimeStore()
   const { active, elapsed, startTimer, stopTimer, cancelTimer } = useTimer()
   const [period, setPeriod] = useState<Period>('today')
   const [drillCategory, setDrillCategory] = useState<CategoryId | null>(null)
+  const [showBudgetSettings, setShowBudgetSettings] = useState(false)
 
   const periodEntries = useMemo(
     () => filterByPeriod(entries, period),
@@ -37,6 +51,16 @@ function App() {
   )
 
   const trend = useMemo(() => getLast7DaysTrend(entries), [entries])
+
+  const budgetProgress = useMemo(
+    () => calculateAllBudgetProgress(budgets, entries, period),
+    [budgets, entries, period]
+  )
+
+  const weeklySummary = useMemo(
+    () => calculateWeeklyBudgetSummary(budgets, entries),
+    [budgets, entries]
+  )
 
   const handleStopTimer = () => {
     const result = stopTimer()
@@ -89,11 +113,19 @@ function App() {
             <p>知道时间花在了哪里</p>
           </div>
         </div>
-        {!isEmpty && (
-          <button className="btn-secondary" onClick={handleExportAll}>
-            导出 CSV
+        <div className="header__actions">
+          {!isEmpty && (
+            <button className="btn-secondary btn-sm" onClick={handleExportAll}>
+              导出 CSV
+            </button>
+          )}
+          <button
+            className="btn-primary btn-sm"
+            onClick={() => setShowBudgetSettings(true)}
+          >
+            ⚙️ 设置预算
           </button>
-        )}
+        </div>
       </header>
 
       <main className="main">
@@ -125,14 +157,18 @@ function App() {
                   <strong>手动补录</strong>
                   <span>填写起止时间，补录过往活动</span>
                 </div>
+                <div className="empty-tip">
+                  <strong>设置预算</strong>
+                  <span>为各活动类别设置目标时长</span>
+                </div>
               </div>
             }
           />
         ) : (
           <>
-            <section className="panel panel--charts">
+            <section className="panel panel--budget">
               <div className="panel__toolbar">
-                <h2>时间分布</h2>
+                <h2>🎯 预算进度</h2>
                 <div className="segmented">
                   <button
                     className={period === 'today' ? 'active' : ''}
@@ -147,6 +183,16 @@ function App() {
                     本周
                   </button>
                 </div>
+              </div>
+              <BudgetProgress
+                data={budgetProgress}
+                onCategoryClick={(cat) => setDrillCategory(cat as CategoryId)}
+              />
+            </section>
+
+            <section className="panel panel--charts">
+              <div className="panel__toolbar">
+                <h2>🍩 时间分布</h2>
               </div>
 
               {summary.length === 0 ? (
@@ -180,13 +226,30 @@ function App() {
               )}
             </section>
 
+            {weeklySummary.length > 0 && (
+              <section className="panel panel--summary">
+                <h2>📊 本周预算达成率汇总</h2>
+                <BudgetSummary data={weeklySummary} />
+              </section>
+            )}
+
             <section className="panel panel--trend">
-              <h2>近七天趋势</h2>
+              <h2>📈 近七天趋势</h2>
               <TrendChart data={trend} />
             </section>
           </>
         )}
       </main>
+
+      {showBudgetSettings && (
+        <BudgetSettings
+          budgets={budgets}
+          onSetBudget={setBudget}
+          onRemoveBudget={removeBudget}
+          onReset={resetBudgets}
+          onClose={() => setShowBudgetSettings(false)}
+        />
+      )}
     </div>
   )
 }
